@@ -1,0 +1,155 @@
+/* --- Global Styles --- */
+body {
+    font-family: "Roboto", Arial, sans-serif;
+    background-color: #f1f1f1; /* YouTube's light grey background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    color: #0f0f0f;
+}
+
+/* --- Uploader Container --- */
+.uploader-container {
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    width: 90%;
+    max-width: 800px; /* Wider than TicTac's */
+    padding: 2rem 3rem;
+    text-align: center;
+}
+
+/* --- Header & Logo --- */
+.header {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #0f0f0f;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.header .logo-box {
+    background-color: #FF0000; /* YouTube Red */
+    color: #ffffff;
+    padding: 0.2rem 0.8rem;
+    border-radius: 8px;
+    margin-left: 0.5rem;
+}
+.header .studio-text {
+    font-size: 1.5rem;
+    font-weight: 400;
+    color: #606060;
+    margin-left: 0.75rem;
+    border-left: 1px solid #ddd;
+    padding-left: 0.75rem;
+}
+
+.uploader-container h2 {
+    font-weight: 500;
+    font-size: 1.5rem;
+    color: #0f0f0f;
+    margin-bottom: 2rem;
+}
+
+/* --- Upload Box --- */
+.upload-box {
+    border: 2px dashed #ccc;
+    border-radius: 8px;
+    padding: 3rem 2rem;
+    cursor: pointer;
+    transition: border-color 0.3s, background-color 0.3s;
+    background-color: #fafafa;
+}
+.upload-box:hover {
+    border-color: #065fd4; /* YouTube Blue */
+    background-color: #fdfdfd;
+}
+.upload-icon {
+    margin-bottom: 1rem;
+}
+.upload-text {
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin-top: 1rem;
+}
+.upload-subtext {
+    font-size: 0.9rem;
+    color: #606060;
+    margin-top: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.upload-button {
+    background-color: #065fd4;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 0.7rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+.upload-button:hover {
+    background-color: #054ab1;
+}
+
+/* Hide the actual file input */
+#file-input {
+    display: none;
+}
+
+/* --- Feedback Area --- */
+#feedback-area {
+    margin-top: 2rem;
+    text-align: left;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    background-color: #f9f9f9;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 1.5rem;
+    display: none; /* Hidden by default */
+}
+#feedback-area h3 {
+    margin-top: 0;
+    font-weight: 700;
+    color: #0f0f0f;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 0.5rem;
+}
+.feedback-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.6rem 0.2rem;
+    border-bottom: 1px solid #eee;
+}
+.feedback-item:last-child {
+    border-bottom: none;
+}
+.feedback-item span:first-child {
+    font-weight: 600;
+    color: #333;
+}
+.status {
+    font-weight: 700;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+.status.success {
+    color: #008000;
+    background-color: #e2f5e6;
+}
+.status.error {
+    color: #d93025;
+    background-color: #fce8e6;
+}
+.status.warning {
+    color: #db7c00;
+    background-color: #fff4e6;
+}
