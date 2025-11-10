@@ -1,0 +1,84 @@
+/* Generic site stylesheet for video uploader mockups
+   - Neutral, reusable styles for multiple platform mockups
+   - Keep selectors generic so other upload pages can reuse them
+*/
+:root{
+    --bg: #f5f7fb;
+    --card: #ffffff;
+    --muted: #6b7280;
+    --accent: #2563eb; /* blue accent */
+    --danger: #dc2626;
+    --success: #16a34a;
+    --radius: 10px;
+}
+
+*{box-sizing: border-box}
+html,body{height:100%}
+body{
+    margin:0;
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    background-color:var(--bg);
+    color:#111827;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+}
+
+.uploader-container{
+    width: min(920px, 94%);
+    margin: 3.5rem auto;
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: 0 6px 22px rgba(15,23,42,0.06);
+    padding: 2rem;
+}
+
+.header{
+    font-size: 1.9rem;
+    font-weight: 700;
+    display:flex;
+    gap: 0.25rem;
+    align-items: baseline;
+}
+
+.brand-accent { color: var(--accent); }
+
+.upload-box{
+    margin-top: 1.5rem;
+    border: 2px dashed #e6e9ef;
+    border-radius: 8px;
+    padding: 1.75rem;
+    text-align:center;
+    cursor:pointer;
+    transition: background-color .18s ease, border-color .18s ease, transform .08s ease;
+}
+.upload-box:hover{ background-color: #fbfdff; border-color: var(--accent); transform: translateY(-2px)}
+.upload-icon{ font-size: 2.4rem; color: var(--muted) }
+.upload-text{ font-weight:600; margin-top:0.75rem }
+.upload-subtext{ color:var(--muted); font-size:0.95rem; margin-top:0.5rem }
+
+/* hide native file input by default (pages may override) */
+#file-input{ display:none }
+
+#feedback-area{
+    margin-top:1.5rem;
+    background: #fbfdff;
+    border:1px solid #eef2ff;
+    border-radius:8px;
+    padding:1rem 1.1rem;
+    display:none; /* shown by pages when needed */
+}
+#feedback-area h3{ margin:0 0 .6rem 0; font-size:1.05rem }
+.feedback-item{ display:flex; justify-content:space-between; gap:1rem; padding:.45rem 0; border-bottom:1px solid #f3f4f6 }
+.feedback-item:last-child{ border-bottom:0 }
+
+.status{ font-weight:700; padding:.2rem .45rem; border-radius:6px }
+.status.success{ color: #065f46; background: #ecfdf5 }
+.status.error{ color: #7f1d1d; background: #fff1f2 }
+
+/* Helpers */
+.muted{ color:var(--muted) }
+.small{ font-size:0.9rem }
+
+@media (min-width:900px){
+    .uploader-container{ padding:2.5rem }
+}
