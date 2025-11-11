@@ -116,8 +116,8 @@
             <div class="upload-box" id="drop-zone">
                 <div class="upload-icon">🖼️</div>
                 <div class="upload-text">Upload Duckling Videos</div>
-                <div class="upload-subtext">Checks file type & size (Max 50MB)</div>
-                <div class="upload-subtext">(Supports .MP4, .MOV, .AVI)</div>
+                <div class="upload-subtext">Checks file type, size (Max 50MB), and minimum 480p resolution</div>
+                <div class="upload-subtext">(Supports .MP4, .MOV, .AVI; 480p+ required)</div>
             </div>
         </label>
         
@@ -136,9 +136,9 @@
             <span id="file-size">...</span>
             <span id="status-size" class="status"></span>
 
-            <span>Codec (H.264/5):</span>
+            <span>Resolution:</span>
             <span id="file-codec">...</span>
-            <span id="status-codec" class="status pending">Checked on server</span>
+            <span id="status-codec" class="status pending">Checked on upload</span>
         </div>
     </div>
 
@@ -222,13 +222,33 @@
                 elStatusSize.className = 'status error';
             }
 
-            // 4. Codec, Resolution, Duration
-            // We cannot check these reliably on the client side for
-            // AVI and H.265 files. We must skip this validation
-            // and leave it for the server.
-            elFileCodec.textContent = 'N/A (Client-side)';
-            elStatusCodec.textContent = 'Checked after upload';
-            elStatusCodec.className = 'status pending';
+            // 4. Resolution (min 480p) check for MP4 and MOV (client-side)
+            if (file.type === 'video/mp4' || file.type === 'video/quicktime') {
+                const video = document.createElement('video');
+                video.preload = 'metadata';
+                video.onloadedmetadata = function() {
+                    window.URL.revokeObjectURL(video.src);
+                    elFileCodec.textContent = `${video.videoWidth}x${video.videoHeight}`;
+                    if (video.videoHeight >= 480) {
+                        elStatusCodec.textContent = 'OK (≥ 480p)';
+                        elStatusCodec.className = 'status success';
+                    } else {
+                        elStatusCodec.textContent = 'Error: Min resolution is 480p';
+                        elStatusCodec.className = 'status error';
+                    }
+                };
+                video.onerror = function() {
+                    elFileCodec.textContent = 'Unknown';
+                    elStatusCodec.textContent = 'Error: Could not read video resolution';
+                    elStatusCodec.className = 'status error';
+                };
+                video.src = URL.createObjectURL(file);
+            } else {
+                // Cannot check AVI reliably client-side
+                elFileCodec.textContent = 'N/A (Client-side)';
+                elStatusCodec.textContent = 'Checked after upload';
+                elStatusCodec.className = 'status pending';
+            }
         }
     </script>
 
