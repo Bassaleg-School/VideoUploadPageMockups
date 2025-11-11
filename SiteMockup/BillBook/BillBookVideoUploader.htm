@@ -253,14 +253,110 @@
             } else if (file.type === 'video/x-msvideo') {
                 // Cannot check AVI codec client-side; allow H.264 or uncompressed, check server-side
                 elFileCodec.textContent = 'N/A (Client-side)';
-                elStatusCodec.textContent = 'Checked after upload (must be H.264 or uncompressed)';
-                elStatusCodec.className = 'status pending';
+                    // Try to read AVI headers client-side to detect codec and resolution (best-effort)
+                    readAviHeaders(file).then(info => {
+                        const codec = info.codec || 'Unknown';
+                        const width = info.width || null;
+                        const height = info.height || null;
+                        elFileCodec.textContent = codec + (width && height ? ` — ${width}x${height}` : '');
+
+                        const codecLower = (codec || '').toLowerCase();
+                        // Accept common AVI codecs we allow (v210 is an acceptable uncompressed/10-bit format here)
+                        if (codecLower.includes('v210') || codecLower.includes('yuv') || codecLower.includes('raw')) {
+                            elStatusCodec.textContent = `OK (${codec})`;
+                            elStatusCodec.className = 'status success';
+                        } else if (codec === 'Unknown') {
+                            elStatusCodec.textContent = 'Checked after upload (unknown client-side)';
+                            elStatusCodec.className = 'status pending';
+                        } else {
+                            elStatusCodec.textContent = `Checked after upload (detected ${codec})`;
+                            elStatusCodec.className = 'status pending';
+                        }
+                    }).catch(err => {
+                        elFileCodec.textContent = 'Unknown';
+                        elStatusCodec.textContent = 'Error: Could not read AVI headers';
+                        elStatusCodec.className = 'status error';
+                    });
             } else {
                 elFileCodec.textContent = 'N/A';
                 elStatusCodec.textContent = 'Error: Only .mp4 (H.264) or .avi (H.264/uncompressed) files allowed';
                 elStatusCodec.className = 'status error';
             }
         }
+
+            // Read AVI headers (best-effort) to detect codec FOURCC and resolution from 'strh'/'strf' chunks.
+            function readAviHeaders(file) {
+                const READ_SIZE = 256 * 1024; // 256KB should cover headers for most files
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    const blob = file.slice(0, Math.min(READ_SIZE, file.size));
+                    reader.onload = function(e) {
+                        const buffer = e.target.result;
+                        const view = new DataView(buffer);
+                        const len = view.byteLength;
+                        const textFromBytes = (off, n) => {
+                            let s = '';
+                            for (let i = 0; i < n; i++) {
+                                const b = view.getUint8(off + i);
+                                if (b === 0) break;
+                                s += String.fromCharCode(b);
+                            }
+                            return s;
+                        };
+
+                        let foundCodec = null;
+                        let foundWidth = null;
+                        let foundHeight = null;
+
+                        // scan for 'strh' and 'strf' chunk IDs
+                        for (let i = 0; i < len - 12; i++) {
+                            // check 'strh'
+                            if (view.getUint8(i) === 0x73 && view.getUint8(i+1) === 0x74 && view.getUint8(i+2) === 0x72 && view.getUint8(i+3) === 0x68) {
+                                // chunk size (little-endian)
+                                const chunkSize = view.getUint32(i+4, true);
+                                const dataOff = i + 8;
+                                if (dataOff + 8 <= len) {
+                                    const fccType = textFromBytes(dataOff, 4);
+                                    const fccHandler = textFromBytes(dataOff + 4, 4);
+                                    if (fccType === 'vids') {
+                                        foundCodec = fccHandler;
+                                        break; // prefer codec from strh
+                                    }
+                                }
+                            }
+                        }
+
+                        // scan for 'strf' to get BITMAPINFOHEADER width/height
+                        for (let i = 0; i < len - 12; i++) {
+                            if (view.getUint8(i) === 0x73 && view.getUint8(i+1) === 0x74 && view.getUint8(i+2) === 0x72 && view.getUint8(i+3) === 0x66) {
+                                const chunkSize = view.getUint32(i+4, true);
+                                const dataOff = i + 8;
+                                // BITMAPINFOHEADER has biSize (4), biWidth (4), biHeight (4)
+                                if (dataOff + 12 <= len) {
+                                    try {
+                                        const biSize = view.getUint32(dataOff, true);
+                                        const width = view.getInt32(dataOff + 4, true);
+                                        const height = view.getInt32(dataOff + 8, true);
+                                        if (Math.abs(width) > 0 && Math.abs(height) > 0) {
+                                            foundWidth = Math.abs(width);
+                                            foundHeight = Math.abs(height);
+                                        }
+                                    } catch (e) {
+                                        // ignore parse errors
+                                    }
+                                    break;
+                                }
+                            }
+                        }
+
+                        resolve({ codec: foundCodec, width: foundWidth, height: foundHeight });
+                    };
+                    reader.onerror = function(e) {
+                        reject(e);
+                    };
+                    reader.readAsArrayBuffer(blob);
+                });
+            }
     </script>
 
 </body>
