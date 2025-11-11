@@ -125,7 +125,7 @@
                 <div class="upload-icon">🦆</div>
                 <div class="upload-text">Select duck video to send</div>
                 <div class="upload-subtext">Checks file type, resolution, length & size</div>
-                <div class="upload-subtext">(Supports .MP4 and .MOV)</div>
+                <div class="upload-subtext">(Supports .MP4 and .MOV — H.264 / H.265 only)</div>
             </div>
         </label>
         
@@ -139,6 +139,10 @@
             <span>File Type:</span>
             <span id="file-type">...</span>
             <span id="status-type" class="status"></span>
+
+            <span>Codec:</span>
+            <span id="file-codec">...</span>
+            <span id="status-codec" class="status"></span>
 
             <span>Resolution:</span>
             <span id="file-res">...</span>
@@ -160,13 +164,15 @@
 
         // Get feedback elements
         const elFileName = document.getElementById('file-name');
-        const elFileType = document.getElementById('file-type');
+    const elFileType = document.getElementById('file-type');
+    const elFileCodec = document.getElementById('file-codec');
         const elFileRes = document.getElementById('file-res');
         const elFileLength = document.getElementById('file-length'); // New
         const elFileSize = document.getElementById('file-size'); // New
 
-        const elStatusName = document.getElementById('status-name');
-        const elStatusType = document.getElementById('status-type');
+    const elStatusName = document.getElementById('status-name');
+    const elStatusType = document.getElementById('status-type');
+    const elStatusCodec = document.getElementById('status-codec');
         const elStatusRes = document.getElementById('status-res');
         const elStatusLength = document.getElementById('status-length'); // New
         const elStatusSize = document.getElementById('status-size'); // New
